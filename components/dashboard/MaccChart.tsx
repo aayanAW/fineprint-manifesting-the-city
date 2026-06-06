@@ -33,8 +33,10 @@ export function MaccChart({ plan }: { plan: RetrofitPlan }) {
                   )}
                 </p>
                 <p className="shrink-0 text-xs tabular-nums">
-                  {v < 0 ? `−${usd(Math.abs(v))}` : usd(v)}/t ·{" "}
-                  {tons(m.tCO2eReduced)}
+                  {m.netCostUSD === 0
+                    ? "rebate-covered"
+                    : `${v < 0 ? `−${usd(Math.abs(v))}` : usd(v)}/t`}{" "}
+                  · {tons(m.tCO2eReduced)}
                 </p>
               </div>
               <div className="relative mt-3 h-3" aria-hidden>

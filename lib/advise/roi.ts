@@ -48,6 +48,7 @@ export interface FixCandidate {
  */
 export interface RoiContext {
   units: number | null;
+  gfa?: number | null; // primary cost basis ($/sqft); works for every building type
   isMultifamily: boolean;
   affordable: boolean;
   fuels: string[];
@@ -127,10 +128,14 @@ export function computeCandidateFixes(
       const bestPerUnitRebate = matched
         .filter(isCash)
         .reduce((mx, r) => Math.max(mx, r.amountNumericMaxUSD ?? 0), 0);
+      // Cost basis: $/sqft × GFA (works for every building type); fall back to
+      // the legacy per-dwelling-unit figure only when GFA is unavailable.
       const grossCostUSD =
-        units != null && m.typicalCostPerUnitUSDMax != null
-          ? m.typicalCostPerUnitUSDMax * units
-          : null;
+        m.typicalCostPerSqftUSD != null && ctx.gfa != null && ctx.gfa > 0
+          ? m.typicalCostPerSqftUSD * ctx.gfa
+          : units != null && m.typicalCostPerUnitUSDMax != null
+            ? m.typicalCostPerUnitUSDMax * units
+            : null;
       const rebateValueUSD = units != null ? bestPerUnitRebate * units : 0;
       const netCostUSD = grossCostUSD != null ? Math.max(0, grossCostUSD - rebateValueUSD) : null;
       const paybackYears =

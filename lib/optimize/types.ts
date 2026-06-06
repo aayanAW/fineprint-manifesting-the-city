@@ -38,6 +38,7 @@ export interface OptimizeInput {
   fines: FineResult[];
   fuels: string[]; // 'gas'|'oil'|'steam'|'electric'
   units: number | null;
+  grossFloorAreaSqft?: number | null; // primary cost basis ($/sqft); works for every building type
   isMultifamily: boolean;
   affordable: boolean;
   targetPeriod?: Period; // default '2030-2034'

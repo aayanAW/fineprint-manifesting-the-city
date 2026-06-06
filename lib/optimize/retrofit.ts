@@ -49,7 +49,8 @@ export interface RetrofitPlan {
 export interface OptimizeInput {
   fines: FineResult[]; // computeAllPeriods output
   fuels: string[]; // 'gas' | 'oil' | 'steam' | 'electric'
-  units: number | null; // dwelling-unit count for cost scaling
+  units: number | null; // dwelling-unit count — scales per-unit rebates
+  grossFloorAreaSqft?: number | null; // primary cost basis ($/sqft); works for every building type
   isMultifamily: boolean;
   affordable: boolean;
   targetPeriod?: Period; // default '2030-2034'
@@ -120,23 +121,42 @@ function matchRebates(
 
 interface Ctx {
   units: number | null;
+  gfa?: number | null;
   isMultifamily: boolean;
   affordable: boolean;
   fuels: string[];
 }
 
 /**
- * Net capex for a single measure: perUnitCost×units − bestPerUnitCashRebate×units
- * (floored at 0). Uses a SINGLE best per-unit cash rebate (programs are largely
- * mutually exclusive), scaled by the same unit count as gross cost. Returns null
- * if the measure is uncostable (no unit count or no per-unit cost figure).
+ * Gross (pre-rebate) capital for a measure. Primary basis is $/sqft × GFA, which
+ * works for EVERY building type (commercial, government, residential). Falls back
+ * to the legacy per-dwelling-unit figure only when GFA is unavailable. Returns
+ * null only when neither basis can be computed.
+ */
+function grossCapex(m: Measure, ctx: Ctx): number | null {
+  if (m.typicalCostPerSqftUSD != null && ctx.gfa != null && ctx.gfa > 0) {
+    return m.typicalCostPerSqftUSD * ctx.gfa;
+  }
+  if (m.typicalCostPerUnitUSDMax != null && ctx.units != null) {
+    return m.typicalCostPerUnitUSDMax * ctx.units;
+  }
+  return null;
+}
+
+/**
+ * Net capex for a single measure: gross − bestPerUnitCashRebate×units (floored at
+ * 0). Per-unit cash rebates only apply when a dwelling-unit count exists (they are
+ * multifamily programs); commercial buildings simply carry full gross cost.
+ * Returns null only if the measure is genuinely uncostable (no $/sqft and no
+ * per-unit figure with units).
  */
 function netCapex(m: Measure, rebates: RebateProgram[], ctx: Ctx): number | null {
-  if (ctx.units == null || m.typicalCostPerUnitUSDMax == null) return null;
-  const gross = m.typicalCostPerUnitUSDMax * ctx.units;
+  const gross = grossCapex(m, ctx);
+  if (gross == null) return null;
   const matched = matchRebates(m, rebates, ctx).filter(isCash);
   const bestPerUnit = matched.reduce((mx, r) => Math.max(mx, r.amountNumericMaxUSD ?? 0), 0);
-  return Math.max(0, gross - bestPerUnit * ctx.units);
+  const rebateTotal = ctx.units != null ? bestPerUnit * ctx.units : 0;
+  return Math.max(0, gross - rebateTotal);
 }
 
 /** Reduction fraction used for the point estimate (mid) / Low / High bounds. */
@@ -249,6 +269,7 @@ export function optimizeRetrofit(
   const targetPeriod: Period = input.targetPeriod ?? '2030-2034';
   const ctx: Ctx = {
     units: input.units,
+    gfa: input.grossFloorAreaSqft ?? null,
     isMultifamily: input.isMultifamily,
     affordable: input.affordable,
     fuels: input.fuels,

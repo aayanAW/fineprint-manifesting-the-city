@@ -10,7 +10,8 @@ export interface Measure {
   appliesToFuel: string[]; // 'gas' | 'oil' | 'steam' | 'electric' | 'any'
   emissionsReductionPctLow: number;
   emissionsReductionPctHigh: number;
-  typicalCostPerUnitUSDMax: number | null; // rough $ per dwelling unit
+  typicalCostPerUnitUSDMax: number | null; // rough $ per dwelling unit (multifamily rebate scale)
+  typicalCostPerSqftUSD?: number | null; // rough installed $ per gross sqft — the primary, building-type-agnostic cost basis (works for commercial + residential)
   typicalCostNote: string;
   url: string;
 }

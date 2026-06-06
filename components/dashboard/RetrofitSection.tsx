@@ -64,16 +64,16 @@ export function RetrofitSection({
     );
   }
 
-  // Public data carries no dwelling-unit count for many buildings, so the
-  // optimizer can't price capital. Say "unpriced" rather than a false $0.
-  const unpriced = plan.capexUSD === 0 && plan.chosenMeasureKeys.length > 0;
+  // Capital is priced on a $/sqft basis, so it's available for every building.
+  // A $0 net capex with measures chosen means rebates fully cover the work — say
+  // so, rather than a misleading "$0" or "unpriced".
+  const hasMeasures = plan.chosenMeasureKeys.length > 0;
+  const rebateCovered = plan.capexUSD === 0 && hasMeasures;
   const stats: Array<{ label: string; value: string; note?: string }> = [
     {
       label: "Capital, net of rebates",
-      value: unpriced ? "unpriced" : usd(plan.capexUSD),
-      note: unpriced
-        ? "no unit count in public data; cost not estimable"
-        : undefined,
+      value: rebateCovered ? "$0" : usd(plan.capexUSD),
+      note: rebateCovered ? "fully covered by matched rebates" : undefined,
     },
     { label: "Fines avoided to 2050", value: usd(plan.totalFinesAvoidedUSD) },
     {
@@ -82,10 +82,8 @@ export function RetrofitSection({
     },
     {
       label: "Total cost of ownership",
-      value: unpriced ? "unpriced" : usd(plan.tcoUSD),
-      note: unpriced
-        ? undefined
-        : `±$${compact(plan.range.tcoHighUSD - plan.range.tcoLowUSD)} uncertainty`,
+      value: usd(plan.tcoUSD),
+      note: `±$${compact(plan.range.tcoHighUSD - plan.range.tcoLowUSD)} uncertainty`,
     },
   ];
 

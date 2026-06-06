@@ -42,5 +42,5 @@ export function deriveContext(
   const isMultifamily = facts.occupancyGroups.some(u => u.group.toLowerCase().includes('multifamily'));
   const fuels = opts?.fuels ?? ['gas', 'electric', 'oil', 'steam'];
   const affordable = opts?.affordable ?? facts.isArticle321 ?? false;
-  return { units, isMultifamily, affordable, fuels };
+  return { units, gfa, isMultifamily, affordable, fuels };
 }

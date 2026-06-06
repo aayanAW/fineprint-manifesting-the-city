@@ -35,6 +35,7 @@ export async function POST(req: Request) {
       fines,
       fuels: ctx.fuels,
       units: ctx.units,
+      grossFloorAreaSqft: facts.grossFloorAreaSqft,
       isMultifamily: ctx.isMultifamily,
       affordable: ctx.affordable,
       targetPeriod: body.targetPeriod,
