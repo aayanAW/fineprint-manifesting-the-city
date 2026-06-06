@@ -1,0 +1,4 @@
+[ { "nyc_borough_block_and_lot": "1000020002", "address_1": "2 Partial GFA Street", "report_year": "2023",
+  "property_gfa_self_reported": "100000", "primary_property_type": "Office",
+  "largest_property_use_type": "Office", "largest_property_use_type_1": "60000",
+  "total_location_based_ghg": "300", "electricity_weather_normalized": "500000" } ]

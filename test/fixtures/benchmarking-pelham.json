@@ -1,0 +1,7 @@
+[ { "nyc_borough_block_and_lot": "2042500026", "nyc_building_identification": "2012345",
+  "address_1": "1870 Pelham Parkway South", "report_year": "2023",
+  "property_gfa_self_reported": "52941", "largest_property_use_type": "Multifamily Housing",
+  "largest_property_use_type_1": "52941", "primary_property_type": "Multifamily Housing",
+  "total_location_based_ghg": "216.1",
+  "electricity_weather_normalized": "1200000", "natural_gas_weather_normalized": "30000",
+  "fuel_oil_2_use_kbtu": "0" } ]

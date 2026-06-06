@@ -1,0 +1,6 @@
+[ { "nyc_borough_block_and_lot": "1000010001", "address_1": "1 Mixed Use Plaza", "report_year": "2023",
+  "property_gfa_self_reported": "100000", "primary_property_type": "Multifamily Housing",
+  "largest_property_use_type": "Multifamily Housing", "largest_property_use_type_1": "70000",
+  "_2nd_largest_property_use": "Retail Store", "_2nd_largest_property_use_1": "30000",
+  "total_location_based_ghg": "500", "district_steam_use_kbtu": "2000000",
+  "fuel_oil_5_6_use_kbtu": "150000" } ]

@@ -1,0 +1,3 @@
+{ "features": [ { "geometry": { "coordinates": [-74.010, 40.708] },
+  "properties": { "label": "120 BROADWAY, Manhattan, NY, USA",
+    "addendum": { "pad": { "bbl": "1000477501", "bin": "1001026" } } } } ] }
