@@ -4,6 +4,7 @@ node_modules/
 *.tsbuildinfo
 .DS_Store
 .env*.local
+.env
 
 # Local SQLite read-through cache (warmed by scripts/fetch-ll84.ts; the demo
 # falls back to committed JSON fixtures under test/fixtures/demo/).
