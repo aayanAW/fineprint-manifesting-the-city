@@ -1,31 +1,181 @@
 @import "tailwindcss";
 
-/* Design tokens — FinePrint v2 */
+/* ————————————————————————————————————————————————————————————————
+   FinePrint — "The Ledger"
+   Editorial fine-print aesthetic: newspaper masthead × legal document
+   × financial ledger. True monochrome. Hairline rules. Tabular figures.
+   Danger is typographic (weight, hatching, underline) — never color.
+   ———————————————————————————————————————————————————————————————— */
+
 @theme {
-  --color-ink: #0a0e14;
-  --color-paper: #f7f6f2;
-  --color-over: #d7263d;   /* over the cap — fines, the 2030 cliff */
-  --color-under: #1b8a5a;  /* compliant */
-  --color-accent: #2563eb;
+  --color-paper: #fcfcfa;
+  --color-ink: #111110;
+  --color-ink-60: #555550;
+  --color-ink-40: #8a8a84;
+  --color-ink-20: #c9c9c2;
+  --color-hairline: #e4e4de;
+  --color-wash: #f3f3ee;
+
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-spline-mono);
+
+  --ease-ledger: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 :root {
   color-scheme: light;
 }
 
-html, body {
+html,
+body {
   background: var(--color-paper);
   color: var(--color-ink);
-  font-feature-settings: "tnum" 1; /* tabular numbers everywhere */
+  font-family: var(--font-spline-mono), ui-monospace, monospace;
+  font-feature-settings: "tnum" 1; /* ledger numbers align everywhere */
 }
 
-/* Reveal motion (transform/opacity only); respects reduced-motion. */
-@keyframes fp-rise-kf {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+::selection {
+  background: var(--color-ink);
+  color: var(--color-paper);
 }
-.fp-rise { animation: fp-rise-kf 0.5s cubic-bezier(0.23, 1, 0.32, 1) both; }
+
+/* Paper grain — barely-there print texture, pure CSS */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.035;
+  background-image: repeating-radial-gradient(
+    circle at 17% 31%,
+    transparent 0,
+    #000 1px,
+    transparent 1.5px,
+    transparent 4px
+  );
+  background-size: 7px 7px;
+}
+
+/* ——— type utilities ——— */
+
+.font-display {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+/* small-caps legal label, the connective tissue of the whole UI */
+.legal-label {
+  font-family: var(--font-spline-mono), monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-60);
+}
+
+/* double rule — masthead / section dividers, like a broadsheet */
+.rule-double {
+  border-top: 3px solid var(--color-ink);
+  position: relative;
+}
+.rule-double::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--color-ink);
+}
+
+/* hatched fill for "over the cap" — print's danger signal */
+.hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-ink) 0,
+    var(--color-ink) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+}
+
+/* footnote marker */
+.fn {
+  font-size: 0.6em;
+  vertical-align: super;
+  letter-spacing: 0;
+}
+
+/* ——— motion: one orchestrated page-load, staggered ——— */
+
+@keyframes ledger-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ledger-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ledger-rule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.rise {
+  animation: ledger-rise 0.6s var(--ease-ledger) both;
+}
+.rise-1 {
+  animation-delay: 0.05s;
+}
+.rise-2 {
+  animation-delay: 0.12s;
+}
+.rise-3 {
+  animation-delay: 0.2s;
+}
+.rise-4 {
+  animation-delay: 0.28s;
+}
+.rise-5 {
+  animation-delay: 0.36s;
+}
+
+.rule-animate {
+  transform-origin: left;
+  animation: ledger-rule 0.8s var(--ease-ledger) both;
+  animation-delay: 0.1s;
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .fp-rise { animation: none; }
+  .rise,
+  .rise-1,
+  .rise-2,
+  .rise-3,
+  .rise-4,
+  .rise-5 {
+    animation: ledger-fade 0.2s ease both;
+  }
+  .rule-animate {
+    animation: none;
+  }
+}
+
+/* keyboard focus — visible, on-theme */
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
 }
