@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/* Design tokens — FinePrint v2 */
+@theme {
+  --color-ink: #0a0e14;
+  --color-paper: #f7f6f2;
+  --color-over: #d7263d;   /* over the cap — fines, the 2030 cliff */
+  --color-under: #1b8a5a;  /* compliant */
+  --color-accent: #2563eb;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html, body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-feature-settings: "tnum" 1; /* tabular numbers everywhere */
+}
+
+/* Reveal motion (transform/opacity only); respects reduced-motion. */
+@keyframes fp-rise-kf {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fp-rise { animation: fp-rise-kf 0.5s cubic-bezier(0.23, 1, 0.32, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-rise { animation: none; }
+}

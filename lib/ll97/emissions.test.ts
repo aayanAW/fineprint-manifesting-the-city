@@ -1,18 +1,27 @@
 import { describe, it, expect } from 'vitest';
-import { computeEmissions } from './emissions';
+import { recomputeEmissions } from './emissions';
 
-describe('computeEmissions', () => {
-  // DOB example: 310,000 kWh + 2,250,000 kBtu gas (=22,500 therms) + 1,050,000 kBtu #2 oil
-  it('matches DOB worked example: 287.00 tCO2e in 2024-2029', () => {
-    const e = computeEmissions(
-      { electricity_kWh: 310000, naturalGas_therms: 22500, fuelOil2_kBtu: 1050000 },
-      '2024-2029',
-    );
-    expect(e).toBeCloseTo(287.0, 1);
+describe('recomputeEmissions', () => {
+  it('electricity uses the period coefficient (grid greens over time)', () => {
+    // 1,000,000 kWh × 0.000288962 = 288.962 (2024-2029)
+    expect(recomputeEmissions({ electricity_kWh: 1_000_000 }, '2024-2029').tco2e).toBeCloseTo(288.962, 6);
+    // same kWh, 2030-2034 coefficient 0.000145 → 145.0
+    expect(recomputeEmissions({ electricity_kWh: 1_000_000 }, '2030-2034').tco2e).toBeCloseTo(145.0, 6);
   });
-  it('drops in 2030 as the electricity coefficient halves', () => {
-    const base = computeEmissions({ electricity_kWh: 310000 }, '2024-2029');
-    const later = computeEmissions({ electricity_kWh: 310000 }, '2030-2034');
-    expect(later).toBeLessThan(base);
+
+  it('sums a multi-fuel building', () => {
+    // 500,000 kWh × 0.000288962 = 144.481
+    // 2,000,000 kBtu gas × 0.00005311 = 106.22
+    const r = recomputeEmissions({ electricity_kWh: 500_000, naturalGas_kBtu: 2_000_000 }, '2024-2029');
+    expect(r.tco2e).toBeCloseTo(144.481 + 106.22, 6);
+    expect(r.unpriceableFuels).toEqual([]);
+  });
+
+  it('returns null when no fuel data is supplied', () => {
+    expect(recomputeEmissions({}, '2024-2029').tco2e).toBeNull();
+  });
+
+  it('rejects a negative fuel value', () => {
+    expect(() => recomputeEmissions({ electricity_kWh: -5 }, '2024-2029')).toThrow(/non-negative/);
   });
 });
