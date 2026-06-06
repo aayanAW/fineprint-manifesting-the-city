@@ -5,7 +5,7 @@ import type { FineResult } from "@/lib/ll97/engine";
 export function FinesTable({ fines }: { fines: FineResult[] }) {
   if (fines.length === 0) return null;
   return (
-    <table className="w-full text-sm tabular-nums">
+    <table className="w-full max-w-2xl text-sm tabular-nums">
       <caption className="sr-only">
         Computed Local Law 97 penalty by compliance period
       </caption>
@@ -33,12 +33,6 @@ export function FinesTable({ fines }: { fines: FineResult[] }) {
             scope="col"
             className="legal-label border-b border-ink py-2 pl-4 text-right font-normal"
           >
-            Overage
-          </th>
-          <th
-            scope="col"
-            className="legal-label border-b border-ink py-2 pl-4 text-right font-normal"
-          >
             Annual fine
           </th>
         </tr>
@@ -53,11 +47,6 @@ export function FinesTable({ fines }: { fines: FineResult[] }) {
             <td className="py-3 pl-4 text-right">
               {f.emissionsLimitTco2e.toLocaleString("en-US")}
             </td>
-            <td className="py-3 pl-4 text-right">
-              {f.overageTco2e > 0
-                ? f.overageTco2e.toLocaleString("en-US")
-                : "·"}
-            </td>
             <td
               className={cn(
                 "py-3 pl-4 text-right",
@@ -65,7 +54,7 @@ export function FinesTable({ fines }: { fines: FineResult[] }) {
                   "font-medium underline decoration-2 underline-offset-4",
               )}
             >
-              {f.compliant ? "$0" : usd(f.annualFineUsd, 2)}
+              {f.compliant ? "$0" : usd(f.annualFineUsd)}
             </td>
           </tr>
         ))}

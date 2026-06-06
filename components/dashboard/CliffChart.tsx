@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -20,7 +21,12 @@ const INK40 = "#8a8a84";
 const WASH = "#f3f3ee";
 
 export function CliffChart({ fines }: { fines: FineResult[] }) {
+  // ResponsiveContainer can't measure during SSR/prerender (width -1); render
+  // the chart only after mount to keep hydration clean and the console quiet.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   if (fines.length === 0) return null;
+  if (!mounted) return <div className="h-80 w-full" aria-hidden />;
   const data = fines.map((f) => ({
     period: f.period,
     emissions: f.actualEmissionsTco2e,

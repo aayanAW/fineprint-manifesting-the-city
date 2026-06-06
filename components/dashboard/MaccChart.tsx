@@ -19,7 +19,7 @@ export function MaccChart({ plan }: { plan: RetrofitPlan }) {
           const widthPct = max === 0 ? 0 : (Math.abs(v) / max) * 50;
           const chosen = plan.chosenMeasureKeys.includes(m.measureKey);
           return (
-            <li key={m.measureKey} className="border-b border-hairline py-3">
+            <li key={m.measureKey} className="border-b border-hairline py-5">
               <div className="flex items-baseline justify-between gap-4">
                 <p
                   className={cn(
@@ -37,7 +37,7 @@ export function MaccChart({ plan }: { plan: RetrofitPlan }) {
                   {tons(m.tCO2eReduced)}
                 </p>
               </div>
-              <div className="relative mt-2 h-3" aria-hidden>
+              <div className="relative mt-3 h-3" aria-hidden>
                 <span className="absolute left-1/2 top-[-4px] h-[calc(100%+8px)] w-px bg-ink" />
                 <span
                   className={cn(

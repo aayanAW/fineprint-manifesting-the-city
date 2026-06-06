@@ -2,7 +2,7 @@ import type { BuildingFacts } from "@/lib/data/types";
 import type { FineResult } from "@/lib/ll97/engine";
 
 // The literal fine print: every provenance note and every engine caveat,
-// rendered verbatim. This is the trust layer; never summarize it.
+// verbatim, behind a single quiet disclosure. Never summarized, never cut.
 export function ProvenanceFootnote({
   facts,
   fines,
@@ -11,33 +11,29 @@ export function ProvenanceFootnote({
   fines: FineResult[];
 }) {
   const notes = Array.from(new Set(fines.flatMap((f) => f.notes)));
+  const items = [
+    ...facts.provenance.map(
+      (p) => `${p.field}: ${p.source}${p.detail ? `; ${p.detail}` : ""}`,
+    ),
+    ...notes,
+    "Estimate only. The official LL97 compliance figure requires a registered design professional.",
+  ];
   return (
-    <footer className="border-t border-ink pt-3">
-      <p className="legal-label">The fine print · how we know this</p>
-      <ol className="mt-3 columns-1 gap-10 text-[0.68rem] leading-relaxed text-ink-60 md:columns-2">
-        {facts.provenance.map((p, i) => (
-          <li key={`prov-${i}`} className="mb-2 break-inside-avoid">
+    <details className="group border-t border-ink pt-3">
+      <summary className="legal-label cursor-pointer list-none">
+        The fine print · how we know this
+        <span className="ml-2 inline-block transition-transform group-open:rotate-90">
+          →
+        </span>
+      </summary>
+      <ol className="mt-3 max-w-3xl space-y-2 text-[0.68rem] leading-relaxed text-ink-60">
+        {items.map((text, i) => (
+          <li key={i}>
             <span className="tabular-nums text-ink-40">{i + 1}. </span>
-            <span className="text-ink">{p.field}</span>: {p.source}
-            {p.detail ? `; ${p.detail}` : ""}
+            {text}
           </li>
         ))}
-        {notes.map((n, i) => (
-          <li key={`note-${i}`} className="mb-2 break-inside-avoid">
-            <span className="tabular-nums text-ink-40">
-              {facts.provenance.length + i + 1}.{" "}
-            </span>
-            {n}
-          </li>
-        ))}
-        <li className="mb-2 break-inside-avoid">
-          <span className="tabular-nums text-ink-40">
-            {facts.provenance.length + notes.length + 1}.{" "}
-          </span>
-          Estimate only. The official LL97 compliance figure requires a
-          registered design professional.
-        </li>
       </ol>
-    </footer>
+    </details>
   );
 }
