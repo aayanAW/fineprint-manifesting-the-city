@@ -1,14 +1,16 @@
-// Catalog types — LOCKED INTERFACE CONTRACT
-// (docs/superpowers/plans/2026-06-06-fineprint-v2-implementation-index.md).
-// Do not rename fields.
+// Catalogs — locked interface contract (FinePrint v2 implementation index).
+// These three interfaces are frozen: do not rename fields. New types may be added
+// by other phases, but Measure / RebateProgram / MatchedRebate are implemented
+// field-for-field against the contract in
+// docs/superpowers/plans/2026-06-06-fineprint-v2-implementation-index.md.
 
 export interface Measure {
-  key: string;
+  key: string; // 'heat-pump' | 'heat-pump-water-heater' | 'lighting' | 'envelope' | 'controls' | 'solar-pv' | 'weatherization'
   name: string;
-  appliesToFuel: string[];
+  appliesToFuel: string[]; // 'gas' | 'oil' | 'steam' | 'electric' | 'any'
   emissionsReductionPctLow: number;
   emissionsReductionPctHigh: number;
-  typicalCostPerUnitUSDMax: number | null;
+  typicalCostPerUnitUSDMax: number | null; // rough $ per dwelling unit
   typicalCostNote: string;
   url: string;
 }
@@ -16,17 +18,19 @@ export interface Measure {
 export interface RebateProgram {
   name: string;
   administrator: string;
-  measures: string[];
+  measures: string[]; // measure keys it funds
   appliesToMultifamily: boolean;
   incomeEligibleBonus: boolean;
-  amount: string;
+  amount: string; // human-readable
   amountNumericMaxUSD: number | null;
-  status: string;
+  status: string; // 'active' | 'expiring' | 'expired'
   sunsetDate: string | null;
   url: string;
-  incomeRestricted?: boolean;
-  cashEligible?: boolean;
-  asOfRight?: boolean;
+  // Explicit eligibility flags (replace brittle prose-regex gating in roi.ts).
+  // Defaults when omitted: cashEligible=true, asOfRight=true, incomeRestricted=false.
+  incomeRestricted?: boolean; // true => only valid for affordable/rent-regulated buildings
+  cashEligible?: boolean; // false => a tax deduction/credit or advisory; never drives net-cost math
+  asOfRight?: boolean; // false => competitive/demonstration grant, not an entitlement; informational only
 }
 
 export interface MatchedRebate {
